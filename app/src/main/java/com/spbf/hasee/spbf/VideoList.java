@@ -42,7 +42,7 @@ import view.DropDownMenu;
  * Created by hasee on 2016/12/26.
  */
 
-public class VideoList extends BaseActivity implements DropDownMenu.ImgOnClickLitener{
+public class VideoList extends BaseActivity implements DropDownMenu.ImgOnClickLitener, VideoListRecyAdepter.ImgOnClickLitener {
 
 
     private String headers[] = {"全部视频"};
@@ -61,6 +61,7 @@ public class VideoList extends BaseActivity implements DropDownMenu.ImgOnClickLi
               if (msg.what==1){
                   mDatas= (List<VideoBean>) msg.obj;
                  adepter=new VideoListRecyAdepter(VideoList.this,mDatas);
+                  adepter.setImgOncLickLitener(VideoList.this);
                   recyclerView.setAdapter(adepter);
               }
         }
@@ -107,6 +108,7 @@ public class VideoList extends BaseActivity implements DropDownMenu.ImgOnClickLi
        recyclerView= (RecyclerView) contentView.findViewById(R.id.rcyv_video_list);
        recyclerView.setLayoutManager(new GridLayoutManager(this,3));
        recyclerView.addItemDecoration(new DividerGridItemDecoration(this));
+
        mDatas=new ArrayList<VideoBean>();
 //       adepter=new VideoListRecyAdepter(VideoList.this,mDatas);
 //       recyclerView.setAdapter(adepter);
@@ -169,5 +171,16 @@ public class VideoList extends BaseActivity implements DropDownMenu.ImgOnClickLi
 
             }
         });
+    }
+
+
+    @Override
+    public void onItemClick(View view, int position) {
+        toast(mDatas.get(position).getTitle());
+    }
+
+    @Override
+    public void onItemLongClick(View view, int position) {
+        toast(mDatas.get(position).getTitle());
     }
 }
