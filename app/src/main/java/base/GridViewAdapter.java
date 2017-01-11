@@ -7,7 +7,12 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.spbf.hasee.spbf.R;
+
+import java.util.List;
+
+import bean.VideoBean;
 
 /**
  * Created by CGS on 2016/12/26.
@@ -15,22 +20,20 @@ import com.spbf.hasee.spbf.R;
 
 public class GridViewAdapter extends BaseAdapter {
     private Context context;
-    private  int[] image;
-    private  String[] sp_name;
-    public GridViewAdapter(Context context, int[] image, String[] sp_name) {
+  private List<VideoBean> mDatas;
+    public GridViewAdapter(Context context,List<VideoBean> mDatas ) {
         this.context=context;
-        this.image=image;
-        this.sp_name=sp_name;
+        this.mDatas=mDatas;
     }
 
     @Override
     public int getCount() {
-        return image.length;
+        return mDatas.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return image[position];
+        return mDatas.get(position);
     }
 
     @Override
@@ -50,8 +53,8 @@ public class GridViewAdapter extends BaseAdapter {
         }else {
             hodler= (ViewHodler) convertView.getTag();
         }
-        hodler.tv.setText(sp_name[position]);
-        hodler.img.setImageResource(image[position]);
+        hodler.tv.setText(mDatas.get(position).getTitle());
+        Glide.with(context).load(mDatas.get(position).getImage()).into(hodler.img);
         return convertView;
     }
 }

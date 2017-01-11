@@ -8,9 +8,16 @@
         android:id="@+id/img_video"
         android:layout_width="120dp"
         android:layout_height="160dp"
-        android:src="@drawable/leimu"/>
+        />
+
     <TextView
         android:id="@+id/tv_videoname"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:text="从零开始的异世界"
+        android:gravity="center"/>
+    <TextView
+        android:id="@+id/tv_videotime"
         android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:text="从零开始的异世界"

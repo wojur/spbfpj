@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.spbf.hasee.spbf.R;
 
 import java.util.List;
@@ -54,8 +55,9 @@ public class VideoListRecyAdepter extends RecyclerView.Adapter<VideoListRecyAdep
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int position) {
-          holder.tv_videoNname.setText(mData.get(position).getVideoName());
-          holder.img_video.setImageResource(mData.get(position).getVidePath());
+          holder.tv_videoNname.setText(mData.get(position).getTitle());
+        holder.tv_videoTime.setText(mData.get(position).getCreateDate());
+        Glide.with(context).load(mData.get(position).getImage()).into(holder.img_video);
         if(tvOnClickLitener!=null){
             holder.tv_videoNname.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -100,10 +102,12 @@ public class VideoListRecyAdepter extends RecyclerView.Adapter<VideoListRecyAdep
     class MyViewHolder extends RecyclerView.ViewHolder {
         ImageView img_video;
         TextView tv_videoNname;
+        TextView tv_videoTime;
         public MyViewHolder(View view) {
             super(view);
           img_video= (ImageView) view.findViewById(R.id.img_video);
            tv_videoNname= (TextView) view.findViewById(R.id.tv_videoname);
+            tv_videoTime= (TextView) view.findViewById(R.id.tv_videotime);
         }
 
     }

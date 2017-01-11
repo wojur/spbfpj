@@ -3,9 +3,12 @@ package com.spbf.hasee.spbf;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +19,10 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,6 +30,12 @@ import adepter.ListDropDownAdapter;
 import adepter.VideoListRecyAdepter;
 import base.BaseActivity;
 import bean.VideoBean;
+import bean.VideoResult;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import view.DividerGridItemDecoration;
 import view.DropDownMenu;
 /**
@@ -42,12 +55,23 @@ public class VideoList extends BaseActivity implements DropDownMenu.ImgOnClickLi
     private RecyclerView recyclerView;
     private List<VideoBean> mDatas;
     private VideoListRecyAdepter adepter;
+    private Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+              if (msg.what==1){
+                  mDatas= (List<VideoBean>) msg.obj;
+                 adepter=new VideoListRecyAdepter(VideoList.this,mDatas);
+                  recyclerView.setAdapter(adepter);
+              }
+        }
+    };
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.video_list_main);
         mDropDownMenu= (DropDownMenu) findViewById(R.id.dropDownMenu);
         initView();
+        getData();
 //        recyclerView= (RecyclerView) findViewById(R.id.rcyv_video_list);
 //        recyclerView.setLayoutManager(new GridLayoutManager(this,3));
 //        recyclerView.addItemDecoration(new DividerGridItemDecoration(this));
@@ -84,12 +108,8 @@ public class VideoList extends BaseActivity implements DropDownMenu.ImgOnClickLi
        recyclerView.setLayoutManager(new GridLayoutManager(this,3));
        recyclerView.addItemDecoration(new DividerGridItemDecoration(this));
        mDatas=new ArrayList<VideoBean>();
-       for (int i=0;i<16;i++){
-           VideoBean videoBean=new VideoBean("从零开始的异世界",R.drawable.leimu);
-           mDatas.add(videoBean);
-       }
-       adepter=new VideoListRecyAdepter(this,mDatas);
-       recyclerView.setAdapter(adepter);
+//       adepter=new VideoListRecyAdepter(VideoList.this,mDatas);
+//       recyclerView.setAdapter(adepter);
        mDropDownMenu.setDropDownMenu(Arrays.asList(headers), popupViews, contentView);
        mDropDownMenu.setImgOnClickLitener(this);
     }
@@ -119,6 +139,34 @@ public class VideoList extends BaseActivity implements DropDownMenu.ImgOnClickLi
             @Override
             public void onClick(View view) {
                 window.dismiss();
+            }
+        });
+    }
+    public void getData(){
+        String url = "http://120.25.195.79/v/api/video/list";
+        OkHttpClient mOkHttpClient = new OkHttpClient();
+        final Request request = new Request.Builder().url(url).build();
+        mOkHttpClient.newCall(request).enqueue(new Callback() {
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                System.out.println("获取apk列表失败");
+                Log.d("cwj", e.getMessage());
+
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String result = response.body().string();
+               // System.out.println(result);
+                Gson gson = new Gson();
+                VideoResult videoResult = gson.fromJson(result,VideoResult.class);
+                    Message message=Message.obtain();
+                   message.what=1;
+                   message.obj=videoResult.items;
+                handler.sendMessage(message);
+                System.out.println(videoResult.getItems().get(0).getCategoryName());
+                Log.d("cwj", videoResult.getItems().get(0).getCategoryName()+videoResult.getItems().get(1).getImage());
+
             }
         });
     }
